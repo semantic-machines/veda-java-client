@@ -75,6 +75,7 @@ public class VedaConnection
 
 	public String[] query(String query) throws Exception
 	{
+		String[] res_arr;
 		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&query=" + URLEncoder.encode(query));
 
 		// System.out.println(res);
@@ -85,7 +86,9 @@ public class VedaConnection
 			if (oo instanceof JSONArray)
 			{
 				JSONArray arr = (JSONArray) oo;
-				return (String[])arr.toArray();
+				res_arr = new String[arr.size()];
+				arr.toArray(res_arr);
+				return res_arr;
 			}
 			return null;
 		} catch (Exception ex)
