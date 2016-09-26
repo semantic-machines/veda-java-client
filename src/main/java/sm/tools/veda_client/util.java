@@ -106,16 +106,16 @@ public class util
 
 			sb.append("{\"data\":");
 
-			if (rc.type == Resource._String || rc.type == Resource._Uri)
+			if (rc.type == Type._String || rc.type == Type._Uri)
 			{
 				sb.append('"');
 				sb.append(util.forJSON((String) rc.data));
 				// sb.append((String) rc.data);
 				sb.append('"');
-			} else if (rc.type == Resource._Bool || rc.type == Resource._Integer || rc.type == Resource._Decimal)
+			} else if (rc.type == Type._Bool || rc.type == Type._Integer || rc.type == Type._Decimal)
 			{
 				sb.append((String) rc.data);
-			} else if (rc.type == Resource._Datetime)
+			} else if (rc.type == Type._Datetime)
 			{
 				sb.append('"');
 				sb.append((String) rc.data);
@@ -448,6 +448,6 @@ public class util
 
 	public static boolean isNumeric(String str)
 	{
-	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+		return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional '-' and decimal.
 	}
 }

@@ -33,7 +33,7 @@ public class Resources
 	{
 		if (_data != null)
 		{
-			if (_type == Resource._String)
+			if (_type == Type._String)
 				_data = _data.replace("\\", "\\\\");
 
 			resources.add(new Resource(_data, _type));
@@ -45,7 +45,7 @@ public class Resources
 	{
 		if (_data != null)
 		{
-			resources.add(new Resource(util.date2string(_data), Resource._Datetime));
+			resources.add(new Resource(util.date2string(_data), Type._Datetime));
 		}
 		return this;
 	}

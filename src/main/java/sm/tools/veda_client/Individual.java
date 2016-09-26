@@ -1,39 +1,211 @@
 package sm.tools.veda_client;
 
+import java.util.HashMap;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Individual
 {
-	private JSONObject js_src;
+	private static int _as_json = 1;
+	private static int _as_struct = 2;
 
-	Individual(JSONObject src)
+	private int type_of_data = _as_json;
+
+	private JSONObject js_src;
+	private HashMap<String, Resources> data = null;
+	private String uri;
+
+	public Resources addProperty(String field_name, String value, int type)
+	{
+		Resources res;
+
+		res = data.get(field_name);
+		if (res == null)
+		{
+			res = new Resources();
+			data.put(field_name, res);
+		}
+
+		res.add(new Resource(value, type));
+		return res;
+	}
+
+	public Resources addProperty(String field_name, Resources rsz)
+	{
+		Resources res;
+
+		res = data.get(field_name);
+		if (res == null)
+		{
+			res = new Resources();
+			data.put(field_name, res);
+		}
+
+		for (Resource rs : rsz.resources)
+		{
+			res.add(rs);
+		}
+		return res;
+	}
+
+	public Resources addProperty(String field_name, Resource rs)
+	{
+		Resources res;
+
+		res = data.get(field_name);
+		if (res == null)
+		{
+			res = new Resources();
+			data.put(field_name, res);
+		}
+
+		res.add(rs);
+
+		return res;
+	}
+
+	public Resources setProperty(String field_name, Resources rsz)
+	{
+		data.put(field_name, rsz);
+		return rsz;
+	}
+
+	public void removeProperty(String field_name)
+	{
+		data.remove(field_name);
+		return;
+	}
+
+	public Individual()
+	{
+		type_of_data = _as_struct;
+		data = new HashMap<String, Resources>();
+	}
+
+	public Individual(JSONObject src)
 	{
 		js_src = src;
+		type_of_data = _as_json;
 	}
 
 	public String getUri()
 	{
-		return getValue("@");
+		if (type_of_data == _as_json)
+			return getValue("@");
+		if (type_of_data == _as_struct)
+			return uri;
+		return null;
+	}
+
+	public void setUri(String uri)
+	{
+		this.uri = uri;
+	}
+
+	public Resources getResources(String field_name)
+	{
+		Resources res = null;
+
+		if (type_of_data == _as_json)
+		{
+			res = new Resources();
+			data = new HashMap<String, Resources>();
+			Set<String> keys = js_src.keySet();
+			for (String key : keys)
+			{
+				if (key.equals("@"))
+					uri = (String) js_src.get(key);
+				else
+				{
+					Resource rs = null;
+
+					JSONArray code_objz = (JSONArray) js_src.get(key);
+					if (code_objz != null)
+					{
+						for (int idx = 0; idx < code_objz.size(); idx++)
+						{
+							// JSONObject vobj = (JSONObject)code_objz.get(idx);
+
+							String value;
+							int type = 0;
+
+							value = ((JSONObject) (code_objz.get(idx))).get("data").toString();
+
+							String stype = ((JSONObject) (code_objz.get(idx))).get("type").toString();
+
+							if (stype.equals("Boolean"))
+								type = Type._Bool;
+							else if (stype.equals("String"))
+								type = Type._String;
+							else if (stype.equals("Uri"))
+								type = Type._Uri;
+							else if (stype.equals("Datetime"))
+								type = Type._Datetime;
+							else if (stype.equals("Integer"))
+								type = Type._Integer;
+							else if (stype.equals("Decimal"))
+								type = Type._Decimal;
+							else
+								type = 0;
+
+							rs = new Resource(value, type);
+							res.add(rs);
+						}
+						addProperty(key, rs);
+					}
+
+				}
+
+				// if (oo instanceof String)
+			}
+
+			type_of_data = _as_struct;
+		}
+
+		res = data.get(field_name);
+
+		return res;
 	}
 
 	public String getValue(String field_name)
 	{
 		String res = null;
 
-		Object oo = js_src.get(field_name);
-		if (oo instanceof String)
-			return (String) js_src.get(field_name);
-
-		JSONArray code_obj = (JSONArray) js_src.get(field_name);
-		if (code_obj != null)
+		if (type_of_data == _as_json)
 		{
-			String code = (String) ((JSONObject) (code_obj.get(0))).get("data");
-			if (code != null)
+			Object oo = js_src.get(field_name);
+			if (oo instanceof String)
+				return (String) js_src.get(field_name);
+
+			JSONArray code_obj = (JSONArray) js_src.get(field_name);
+			if (code_obj != null)
 			{
-				return code;
+				String code = (String) ((JSONObject) (code_obj.get(0))).get("data");
+				if (code != null)
+				{
+					return code;
+				}
 			}
 		}
+
+		if (type_of_data == _as_struct)
+		{
+
+		}
+
 		return res;
+	}
+
+	public String toJsonStr()
+	{
+		StringBuffer sb = new StringBuffer();
+		for (String key : data.keySet())
+		{
+			Resources rcs = data.get(key);
+			util.addProperty(sb, key, rcs);
+		}
+		return sb.toString();
 	}
 }

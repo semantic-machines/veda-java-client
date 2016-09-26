@@ -32,7 +32,15 @@ public class VedaConnection
 	boolean _isOk = false;
 	JSONParser jp;
 
-	public int put(String jsn, boolean isPrepareEvent) throws InterruptedException
+	public int putIndividual(Individual indv, boolean isPrepareEvent) throws InterruptedException
+	{
+		String jsn = indv.toJsonStr();
+		String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
+		int res = putJson(ijsn, isPrepareEvent);
+		return res;
+	}
+
+	public int putJson(String jsn, boolean isPrepareEvent) throws InterruptedException
 	{
 		int res = 429;
 		int count_wait = 0;
@@ -116,6 +124,18 @@ public class VedaConnection
 			ex.printStackTrace();
 		}
 		return null;
+	}
+
+	public static void copy(Individual src, Individual dest, String field_name)
+	{
+		Resources rsz = src.getResources(field_name);
+
+		if (rsz != null)
+		{
+			for (Resource rs : rsz.resources)
+				dest.addProperty(field_name, rs.getData(), rs.getType());
+		}
+
 	}
 
 }
