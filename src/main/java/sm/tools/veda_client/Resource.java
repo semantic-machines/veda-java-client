@@ -22,6 +22,20 @@ public class Resource
 		type = Type._String;
 	}
 
+	public Resource(String _data, String stype)
+	{
+		data = _data;
+
+		if (stype.equals("Bool"))
+			type = Type._Bool;
+		else if (stype.equals("Uri"))
+			type = Type._Uri;
+		else if (stype.equals("String"))
+			type = Type._String;
+
+		type = Type._String;
+	}
+
 	public Resource(String _data, int _type)
 	{
 		data = _data;

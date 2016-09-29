@@ -126,16 +126,20 @@ public class VedaConnection
 		return null;
 	}
 
-	public static void copy(Individual src, Individual dest, String field_name)
+	public static void copy(Individual src, Individual dest, String field_name, int new_type)
 	{
 		Resources rsz = src.getResources(field_name);
 
 		if (rsz != null)
 		{
 			for (Resource rs : rsz.resources)
-				dest.addProperty(field_name, rs.getData(), rs.getType());
+			{
+				if (new_type > 0)	
+					dest.addProperty(field_name, rs.getData(), new_type);
+				else
+					dest.addProperty(field_name, rs.getData(), rs.getType());
+			}	
 		}
 
 	}
-
 }
