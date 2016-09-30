@@ -1,5 +1,6 @@
 package sm.tools.veda_client;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -17,6 +18,31 @@ public class Individual
 	private HashMap<String, Resources> data = null;
 	private String uri;
 
+	public String[] getPredicates()
+	{
+		if (type_of_data == _as_json)
+		{
+			getResources("@");
+		}
+
+		return data.keySet().toArray(new String[0]);
+	}
+
+	public Resources addProperty(String field_name, Date _data)
+	{
+		Resources res;
+
+		res = data.get(field_name);
+		if (res == null)
+		{
+			res = new Resources();
+			data.put(field_name, res);
+		}
+
+		res.add(_data);
+		return res;
+	}
+
 	public Resources addProperty(String field_name, String value, int type)
 	{
 		Resources res;
@@ -29,6 +55,21 @@ public class Individual
 		}
 
 		res.add(new Resource(value, type));
+		return res;
+	}
+
+	public Resources addProperty(String field_name, String value, String lang)
+	{
+		Resources res;
+
+		res = data.get(field_name);
+		if (res == null)
+		{
+			res = new Resources();
+			data.put(field_name, res);
+		}
+
+		res.add(new Resource(value, Type._String, lang));
 		return res;
 	}
 
@@ -62,6 +103,16 @@ public class Individual
 		}
 
 		res.add(rs);
+
+		return res;
+	}
+
+	public Resources setProperty(String field_name, Resource rs)
+	{
+		Resources res = new Resources();
+
+		res.add(rs);
+		data.put(field_name, res);
 
 		return res;
 	}
@@ -131,9 +182,15 @@ public class Individual
 							String value;
 							int type = 0;
 
-							value = ((JSONObject) (code_objz.get(idx))).get("data").toString();
+							JSONObject jsval = (JSONObject) (code_objz.get(idx));
 
-							String stype = ((JSONObject) (code_objz.get(idx))).get("type").toString();
+							value = jsval.get("data").toString();
+							String stype = jsval.get("type").toString();
+							Object olang = jsval.get("lang");
+							String lang = "NONE";
+
+							if (olang != null)
+								lang = olang.toString();
 
 							if (stype.equals("Boolean"))
 								type = Type._Bool;
@@ -150,10 +207,10 @@ public class Individual
 							else
 								type = 0;
 
-							rs = new Resource(value, type);
+							rs = new Resource(value, type, lang);
+							addProperty(key, rs);
 							res.add(rs);
 						}
-						addProperty(key, rs);
 					}
 
 				}
@@ -204,7 +261,7 @@ public class Individual
 		for (String key : data.keySet())
 		{
 			Resources rcs = data.get(key);
-			util.addProperty(sb, key, rcs);
+			util.serializeResources(sb, key, rcs);
 		}
 		return sb.toString();
 	}

@@ -77,7 +77,7 @@ public class util
 	final static String _Ru = "RU";
 	final static String _En = "EN";
 
-	public static void addProperty(StringBuffer sb, String name, Resources rcs)
+	public static void serializeResources(StringBuffer sb, String name, Resources rcs)
 	{
 		if (rcs.resources.size() == 0)
 			return;

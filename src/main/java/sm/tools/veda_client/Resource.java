@@ -16,6 +16,11 @@ public class Resource
 		return type;
 	}
 
+	public String getLang()
+	{
+		return lang;
+	}
+
 	public Resource(String _data)
 	{
 		data = _data;
@@ -26,6 +31,8 @@ public class Resource
 	{
 		data = _data;
 
+		type = Type._String;
+
 		if (stype.equals("Bool"))
 			type = Type._Bool;
 		else if (stype.equals("Uri"))
@@ -33,7 +40,6 @@ public class Resource
 		else if (stype.equals("String"))
 			type = Type._String;
 
-		type = Type._String;
 	}
 
 	public Resource(String _data, int _type)
