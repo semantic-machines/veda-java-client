@@ -21,9 +21,7 @@ public class Individual
 	public String[] getPredicates()
 	{
 		if (type_of_data == _as_json)
-		{
 			getResources("@");
-		}
 
 		return data.keySet().toArray(new String[0]);
 	}
@@ -31,6 +29,9 @@ public class Individual
 	public Resources addProperty(String field_name, Date _data)
 	{
 		Resources res;
+
+		if (type_of_data == _as_json)
+			getResources("@");
 
 		res = data.get(field_name);
 		if (res == null)
@@ -45,9 +46,17 @@ public class Individual
 
 	public Resources addProperty(String field_name, String value, int type)
 	{
-		Resources res;
+		Resources res = null;
+
+		if (type_of_data == _as_json)
+			getResources("@");
 
 		res = data.get(field_name);
+		if (res != null)
+			for (Resource rc : res.resources)
+				if (rc.data.equals(value) && rc.type == type)
+					return res;
+
 		if (res == null)
 		{
 			res = new Resources();
@@ -62,7 +71,15 @@ public class Individual
 	{
 		Resources res;
 
+		if (type_of_data == _as_json)
+			getResources("@");
+
 		res = data.get(field_name);
+		if (res != null)
+			for (Resource rc : res.resources)
+				if (rc.data.equals(value) && rc.type == Type._String)
+					return res;
+		
 		if (res == null)
 		{
 			res = new Resources();
@@ -76,6 +93,9 @@ public class Individual
 	public Resources addProperty(String field_name, Resources rsz)
 	{
 		Resources res;
+
+		if (type_of_data == _as_json)
+			getResources("@");
 
 		res = data.get(field_name);
 		if (res == null)
@@ -95,6 +115,9 @@ public class Individual
 	{
 		Resources res;
 
+		if (type_of_data == _as_json)
+			getResources("@");
+
 		res = data.get(field_name);
 		if (res == null)
 		{
@@ -111,6 +134,9 @@ public class Individual
 	{
 		Resources res = new Resources();
 
+		if (type_of_data == _as_json)
+			getResources("@");
+
 		res.add(rs);
 		data.put(field_name, res);
 
@@ -119,12 +145,18 @@ public class Individual
 
 	public Resources setProperty(String field_name, Resources rsz)
 	{
+		if (type_of_data == _as_json)
+			getResources("@");
+
 		data.put(field_name, rsz);
 		return rsz;
 	}
 
 	public void removeProperty(String field_name)
 	{
+		if (type_of_data == _as_json)
+			getResources("@");
+
 		data.remove(field_name);
 		return;
 	}
@@ -161,6 +193,8 @@ public class Individual
 
 		if (type_of_data == _as_json)
 		{
+			type_of_data = _as_struct;
+
 			res = new Resources();
 			data = new HashMap<String, Resources>();
 			Set<String> keys = js_src.keySet();
@@ -218,7 +252,6 @@ public class Individual
 				// if (oo instanceof String)
 			}
 
-			type_of_data = _as_struct;
 		}
 
 		res = data.get(field_name);
