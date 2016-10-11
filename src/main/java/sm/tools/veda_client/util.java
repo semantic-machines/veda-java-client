@@ -112,10 +112,16 @@ public class util
 				sb.append(util.forJSON((String) rc.data));
 				// sb.append((String) rc.data);
 				sb.append('"');
-			} else if (rc.type == Type._Bool || rc.type == Type._Integer || rc.type == Type._Decimal)
+			} else if (rc.type == Type._Bool || rc.type == Type._Integer)
 			{
+				sb.append((String) rc.data);				
+			} else if (rc.type == Type._Decimal)
+			{
+				sb.append('"');
 				sb.append((String) rc.data);
-			} else if (rc.type == Type._Datetime)
+				sb.append('"');				
+			}			
+			else if (rc.type == Type._Datetime)
 			{
 				sb.append('"');
 				sb.append((String) rc.data);
