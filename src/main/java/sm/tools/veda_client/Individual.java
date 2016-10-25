@@ -18,6 +18,11 @@ public class Individual
 	private HashMap<String, Resources> data = null;
 	private String uri;
 
+	public String toString ()
+	{
+		return "@:" + uri + " " + data.toString();
+	}
+	
 	public String[] getPredicates()
 	{
 		if (type_of_data == _as_json)
@@ -290,6 +295,9 @@ public class Individual
 
 	public String toJsonStr()
 	{
+		if (type_of_data == _as_json)
+			getResources("@");
+		
 		StringBuffer sb = new StringBuffer();
 		for (String key : data.keySet())
 		{
