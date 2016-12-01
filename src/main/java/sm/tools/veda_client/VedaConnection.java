@@ -42,17 +42,55 @@ public class VedaConnection
 
 	public int putJson(String jsn, boolean isPrepareEvent) throws InterruptedException
 	{
+		if (jsn.indexOf("\\") >= 0)
+		{
+			int len = jsn.length();
+			StringBuffer new_str_buff = new StringBuffer();
+			
+			for (int idx = 0; idx < jsn.length(); idx++)
+			{
+				char ch1 = jsn.charAt(idx);
+				new_str_buff.append(ch1);
+
+				if (ch1 == '\\')
+				{
+					char ch2 = 0;
+
+					if (idx < len - 1)
+						ch2 = jsn.charAt(idx + 1);
+
+					if (ch2 != 'n' && ch2 != 'b' && ch2 != '"' && ch2 != '\\')
+					{
+						new_str_buff.append('\\');
+					}
+					
+					if (ch2 == '\\')
+					{
+						new_str_buff.append(ch2);
+						idx++;
+					}
+						
+				}
+			}
+
+			jsn = new_str_buff.toString();
+		}
+
 		int res = 429;
 		int count_wait = 0;
 		while (res == 429)
 		{
-			res = util.excutePut(destination + "/put_individual", "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn
-					+ ", \"prepare_events\":" + isPrepareEvent + ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }");
+			String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"prepare_events\":" + isPrepareEvent
+					+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
+			res = util.excutePut(destination + "/put_individual", query);
 
-			if (res == 429)
+			if (res != 200)
 			{
-				Thread.sleep(10);
-				count_wait++;
+				if (res == 429)
+				{
+					Thread.sleep(10);
+					count_wait++;
+				}
 			}
 
 			if (count_wait == 1)
@@ -134,11 +172,11 @@ public class VedaConnection
 		{
 			for (Resource rs : rsz.resources)
 			{
-				if (new_type > 0)	
+				if (new_type > 0)
 					dest.addProperty(field_name, rs.getData(), new_type);
 				else
 					dest.addProperty(field_name, rs.getData(), rs.getType());
-			}	
+			}
 		}
 
 	}

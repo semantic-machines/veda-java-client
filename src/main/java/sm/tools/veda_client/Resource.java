@@ -55,6 +55,15 @@ public class Resource
 		lang = _lang;
 	}
 
+	public Resource(boolean _data, int bool)
+	{
+		if (_data == true)
+			data = "true";
+		else
+			data = "false";
+		type = Type._Bool;
+	}
+
 	public String toString()
 	{
 		return "" + data + "(" + type + ")";

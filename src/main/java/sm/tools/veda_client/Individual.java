@@ -97,7 +97,7 @@ public class Individual
 
 	public Resources addProperty(String field_name, Resources rsz)
 	{
-		Resources res;
+		Resources res = new Resources ();
 
 		if (type_of_data == _as_json)
 			getResources("@");
