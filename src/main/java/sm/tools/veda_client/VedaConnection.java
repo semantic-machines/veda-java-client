@@ -31,6 +31,7 @@ public class VedaConnection
 	String vedaTicket;
 	boolean _isOk = false;
 	JSONParser jp;
+	public long count_put = 0;
 
 	public int putIndividual(Individual indv, boolean isPrepareEvent) throws InterruptedException
 	{
@@ -46,7 +47,7 @@ public class VedaConnection
 		{
 			int len = jsn.length();
 			StringBuffer new_str_buff = new StringBuffer();
-			
+
 			for (int idx = 0; idx < jsn.length(); idx++)
 			{
 				char ch1 = jsn.charAt(idx);
@@ -63,13 +64,13 @@ public class VedaConnection
 					{
 						new_str_buff.append('\\');
 					}
-					
+
 					if (ch2 == '\\')
 					{
 						new_str_buff.append(ch2);
 						idx++;
 					}
-						
+
 				}
 			}
 
@@ -91,6 +92,9 @@ public class VedaConnection
 					Thread.sleep(10);
 					count_wait++;
 				}
+			} else
+			{
+				count_put++;
 			}
 
 			if (count_wait == 1)
@@ -103,8 +107,8 @@ public class VedaConnection
 
 	public String getVedaTicket() throws Exception
 	{
-		String res = util.excuteGet(
-				destination + "/authenticate?login=karpovrt&password=a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+		String res = util
+				.excuteGet(destination + "/authenticate?login=karpovrt&password=a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
 
 		System.out.println(res);
 		try
