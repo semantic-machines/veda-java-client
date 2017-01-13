@@ -131,14 +131,19 @@ public class VedaConnection
 		// System.out.println(res);
 		try
 		{
-			Object oo = jp.parse(res);
+			Object oo_res = jp.parse(res);
 
-			if (oo instanceof JSONArray)
+			if (oo_res instanceof JSONObject)
 			{
-				JSONArray arr = (JSONArray) oo;
-				res_arr = new String[arr.size()];
-				arr.toArray(res_arr);
-				return res_arr;
+				Object oo = ((JSONObject) oo_res).get("result");
+
+				if (oo instanceof JSONArray)
+				{
+					JSONArray arr = (JSONArray) oo;
+					res_arr = new String[arr.size()];
+					arr.toArray(res_arr);
+					return res_arr;
+				}
 			}
 			return null;
 		} catch (Exception ex)
