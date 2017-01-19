@@ -29,10 +29,10 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 
 public class util
 {
-	private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss");
-	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
+	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
-	
+
 	public static String escape(String string)
 	{
 
@@ -115,7 +115,9 @@ public class util
 				sb.append('"');
 			} else if (rc.type == Type._Bool || rc.type == Type._Integer)
 			{
-				sb.append((String) rc.data);
+				// sb.append('"');
+				sb.append((String) rc.data.toLowerCase());
+				// sb.append('"');
 			} else if (rc.type == Type._Decimal)
 			{
 				sb.append('"');
@@ -173,8 +175,8 @@ public class util
 	public static String date2string(Date date)
 	{
 		TimeZone gmtTime = TimeZone.getTimeZone("GMT");
-	    sdf2.setTimeZone(gmtTime);
-		
+		sdf2.setTimeZone(gmtTime);
+
 		StringBuilder sb = new StringBuilder(sdf2.format(date));
 		sb.setCharAt(10, 'T');
 		sb.append("Z");
