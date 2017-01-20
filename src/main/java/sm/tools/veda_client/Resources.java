@@ -15,6 +15,12 @@ public class Resources
 
 	public Resources add(Resource rc)
 	{
+		for (Resource i_rc : resources)
+		{
+			if (i_rc.data.equals(rc.data) && i_rc.type == rc.type)
+				return this;
+		}
+
 		resources.add(rc);
 		return this;
 	}
@@ -24,7 +30,16 @@ public class Resources
 		if (_data != null)
 		{
 			_data = _data.replace("\\", "\\\\");
-			resources.add(new Resource(_data, 2, _lang));
+
+			Resource rc = new Resource(_data, 2, _lang);
+
+			for (Resource i_rc : resources)
+			{
+				if (i_rc.data.equals(rc.data) && i_rc.type == rc.type)
+					return this;
+			}
+
+			resources.add(rc);
 		}
 		return this;
 	}
@@ -36,7 +51,15 @@ public class Resources
 			if (_type == Type._String)
 				_data = _data.replace("\\", "\\\\");
 
-			resources.add(new Resource(_data, _type));
+			Resource rc = new Resource(_data, _type);
+
+			for (Resource i_rc : resources)
+			{
+				if (i_rc.data.equals(rc.data) && i_rc.type == rc.type)
+					return this;
+			}
+
+			resources.add(rc);
 		}
 		return this;
 	}
@@ -45,7 +68,14 @@ public class Resources
 	{
 		if (_data != null)
 		{
-			resources.add(new Resource(util.date2string(_data), Type._Datetime));
+			Resource rc = new Resource(util.date2string(_data), Type._Datetime);
+			for (Resource i_rc : resources)
+			{
+				if (i_rc.data.equals(rc.data) && i_rc.type == rc.type)
+					return this;
+			}
+
+			resources.add(rc);
 		}
 		return this;
 	}

@@ -17,7 +17,7 @@ public class Individual
 	private JSONObject js_src;
 	private HashMap<String, Resources> data = null;
 	private String uri;
-
+	
 	public String toString ()
 	{
 		return "@:" + uri + " " + data.toString();
