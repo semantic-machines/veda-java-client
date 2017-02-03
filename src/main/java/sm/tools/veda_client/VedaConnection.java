@@ -8,6 +8,8 @@ import org.json.simple.parser.JSONParser;
 
 public class VedaConnection
 {
+	boolean is_enable_store = true;
+
 	public VedaConnection(String _url) throws Exception
 	{
 		jp = new JSONParser();
@@ -16,10 +18,20 @@ public class VedaConnection
 
 		if ((vedaTicket == null) || (vedaTicket.length() < 1))
 		{
-			System.out.println("Destination:Veda:Login filed");
+			System.out.println("Destination.Veda.Login filed");
 			_isOk = false;
 		}
 		_isOk = true;
+	}
+
+	public void disableStore()
+	{
+		is_enable_store = false;
+	}
+
+	public void enabelStore()
+	{
+		is_enable_store = true;
 	}
 
 	public boolean isOk()
@@ -35,13 +47,36 @@ public class VedaConnection
 
 	public int putIndividual(Individual indv, boolean isPrepareEvent) throws InterruptedException
 	{
-		String jsn = indv.toJsonStr();
-		String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
-		int res = putJson(ijsn, isPrepareEvent);
-		return res;
+		if (is_enable_store == false)
+			return 200;
+
+		boolean is_store = false;
+
+		Resources types = indv.getResources("rdf:type");
+
+		if (types != null)
+		{
+			for (Resource rs : types.resources)
+			{
+				if (rs.data.equals("v-s:ContractorProfileFile") || rs.data.equals("v-s:File"))
+				{
+					is_store = true;
+					break;
+				}
+			}
+		}
+
+		if (is_store)
+		{
+			String jsn = indv.toJsonStr();
+			String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
+			int res = putJson(ijsn, isPrepareEvent);
+			return res;
+		} else
+			return 200;
 	}
 
-	public int putJson(String jsn, boolean isPrepareEvent) throws InterruptedException
+	private int putJson(String jsn, boolean isPrepareEvent) throws InterruptedException
 	{
 		if (jsn.indexOf("\\") >= 0)
 		{
