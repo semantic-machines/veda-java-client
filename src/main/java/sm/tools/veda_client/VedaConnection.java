@@ -8,8 +8,6 @@ import org.json.simple.parser.JSONParser;
 
 public class VedaConnection
 {
-	boolean is_enable_store = true;
-
 	public VedaConnection(String _url) throws Exception
 	{
 		jp = new JSONParser();
@@ -22,16 +20,6 @@ public class VedaConnection
 			_isOk = false;
 		}
 		_isOk = true;
-	}
-
-	public void disableStore()
-	{
-		is_enable_store = false;
-	}
-
-	public void enabelStore()
-	{
-		is_enable_store = true;
 	}
 
 	public boolean isOk()
@@ -47,33 +35,10 @@ public class VedaConnection
 
 	public int putIndividual(Individual indv, boolean isPrepareEvent) throws InterruptedException
 	{
-		if (is_enable_store == false)
-			return 200;
-
-		boolean is_store = false;
-
-		Resources types = indv.getResources("rdf:type");
-
-		if (types != null)
-		{
-			for (Resource rs : types.resources)
-			{
-				if (rs.data.equals("v-s:ContractorProfileFile") || rs.data.equals("v-s:File"))
-				{
-					is_store = true;
-					break;
-				}
-			}
-		}
-
-		if (is_store)
-		{
-			String jsn = indv.toJsonStr();
-			String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
-			int res = putJson(ijsn, isPrepareEvent);
-			return res;
-		} else
-			return 200;
+		String jsn = indv.toJsonStr();
+		String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
+		int res = putJson(ijsn, isPrepareEvent);
+		return res;
 	}
 
 	private int putJson(String jsn, boolean isPrepareEvent) throws InterruptedException
