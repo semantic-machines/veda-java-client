@@ -87,7 +87,14 @@ public class util
 			e.printStackTrace();
 		}
 
-		return "d:" + util.byteArrayToHexString(md.digest(big_uri.getBytes()));
+		String hh = util.byteArrayToHexString(md.digest(big_uri.getBytes()));
+		
+		if (hh.charAt(0) >= '0' && hh.charAt(0) <= '9')
+		{
+			hh = "d" + hh;
+		}
+		
+		return "d:" + hh;
 		
 	}
 
@@ -321,6 +328,14 @@ public class util
 		  return result;
 		}
 
+	public static String byteArrayToABCString(byte[] b) {
+		  String result = "";
+		  for (int i=0; i < b.length; i++) {
+		    result +=
+		          Integer.toString( ( b[i] & 0xff ) + 0x100, 32).substring( 1 );
+		  }
+		  return result;
+		}
 
 
 	public static int excutePut(String targetURL, String urlParameters)
