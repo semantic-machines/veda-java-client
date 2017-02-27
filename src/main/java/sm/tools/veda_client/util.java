@@ -104,7 +104,7 @@ public class util
 
 	public static void serializeResources(StringBuffer sb, String name, Resources rcs)
 	{
-		if (rcs.resources.size() == 0)
+		if (rcs == null || rcs.resources == null || rcs.resources.size() == 0)
 			return;
 
 		int ll = sb.length() - 1;
