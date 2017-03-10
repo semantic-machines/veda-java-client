@@ -17,12 +17,12 @@ public class Individual
 	private JSONObject js_src;
 	private HashMap<String, Resources> data = null;
 	private String uri;
-	
-	public String toString ()
+
+	public String toString()
 	{
 		return "@:" + uri + " " + data.toString();
 	}
-	
+
 	public String[] getPredicates()
 	{
 		if (type_of_data == _as_json)
@@ -84,7 +84,7 @@ public class Individual
 			for (Resource rc : res.resources)
 				if (rc.data.equals(value) && rc.type == Type._String)
 					return res;
-		
+
 		if (res == null)
 		{
 			res = new Resources();
@@ -97,7 +97,7 @@ public class Individual
 
 	public Resources addProperty(String field_name, Resources rsz)
 	{
-		Resources res = new Resources ();
+		Resources res = new Resources();
 
 		if (type_of_data == _as_json)
 			getResources("@");
@@ -109,9 +109,12 @@ public class Individual
 			data.put(field_name, res);
 		}
 
-		for (Resource rs : rsz.resources)
+		if (rsz != null)
 		{
-			res.add(rs);
+			for (Resource rs : rsz.resources)
+			{
+				res.add(rs);
+			}
 		}
 		return res;
 	}
@@ -297,7 +300,7 @@ public class Individual
 	{
 		if (type_of_data == _as_json)
 			getResources("@");
-		
+
 		StringBuffer sb = new StringBuffer();
 		for (String key : data.keySet())
 		{
