@@ -1,5 +1,7 @@
 package sm.tools.veda_client;
 
+import java.util.Date;
+
 public class Resource
 {
 	String data;
@@ -42,6 +44,12 @@ public class Resource
 
 	}
 
+	public Resource (Date _data)
+	{
+		util.date2string(_data);
+		type = Type._Datetime;
+	}
+	
 	public Resource(String _data, int _type)
 	{
 		data = _data;

@@ -108,7 +108,7 @@ public class VedaConnection
 	public String getVedaTicket() throws Exception
 	{
 		String res = util
-				.excuteGet(destination + "/authenticate?login=karpovrt&password=a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+				.excuteGet(destination + "/authenticate?login=ImportDMSToVeda&password=a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
 
 		System.out.println(res);
 		try

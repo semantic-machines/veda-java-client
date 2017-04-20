@@ -12,9 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.CharacterIterator;
 import java.text.SimpleDateFormat;
-import java.text.StringCharacterIterator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -28,6 +26,10 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 
 public class util
 {
@@ -75,8 +77,8 @@ public class util
 			return "";
 		}
 	}
-	
-	public static String get_hashed_uri (String big_uri)
+
+	public static String get_hashed_uri(String big_uri)
 	{
 		MessageDigest md = null;
 		try
@@ -88,14 +90,14 @@ public class util
 		}
 
 		String hh = util.byteArrayToHexString(md.digest(big_uri.getBytes()));
-		
+
 		if (hh.charAt(0) >= '0' && hh.charAt(0) <= '9')
 		{
 			hh = "d" + hh;
 		}
-		
+
 		return "d:" + hh;
-		
+
 	}
 
 	final static String _None = "NONE";
@@ -318,25 +320,26 @@ public class util
 			}
 		}
 	}
-	
-	public static String byteArrayToHexString(byte[] b) {
-		  String result = "";
-		  for (int i=0; i < b.length; i++) {
-		    result +=
-		          Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
-		  }
-		  return result;
-		}
 
-	public static String byteArrayToABCString(byte[] b) {
-		  String result = "";
-		  for (int i=0; i < b.length; i++) {
-		    result +=
-		          Integer.toString( ( b[i] & 0xff ) + 0x100, 32).substring( 1 );
-		  }
-		  return result;
+	public static String byteArrayToHexString(byte[] b)
+	{
+		String result = "";
+		for (int i = 0; i < b.length; i++)
+		{
+			result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
 		}
+		return result;
+	}
 
+	public static String byteArrayToABCString(byte[] b)
+	{
+		String result = "";
+		for (int i = 0; i < b.length; i++)
+		{
+			result += Integer.toString((b[i] & 0xff) + 0x100, 32).substring(1);
+		}
+		return result;
+	}
 
 	public static int excutePut(String targetURL, String urlParameters)
 	{
@@ -468,37 +471,22 @@ public class util
 
 	}
 
+	public static final CharSequenceTranslator ESCAPE_JSON1 = new AggregateTranslator(new LookupTranslator(new String[][]
+	{
+			{ "\"", "\\\"" },
+			{ "\\", "\\\\" },
+			{ "/", "\\/" } }), new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()));
+
 	public static String forJSON(String input)
 	{
-		if (input == null || input.isEmpty())
+		String res = ESCAPE_JSON1.translate(input);
+
+		if (res.indexOf("d:") < 0 && res.indexOf("v-s:") < 0 && res.indexOf("Договор") >= 0)
 		{
-			return "";
+			res.length();
 		}
-		int len = input.length();
-		// сделаем небольшой запас, чтобы не выделять память потом
-		final StringBuilder result = new StringBuilder(len + len / 4);
-		final StringCharacterIterator iterator = new StringCharacterIterator(input);
-		char ch = iterator.current();
-		while (ch != CharacterIterator.DONE)
-		{
-			if (ch == '\n')
-			{
-				result.append("\\n");
-			} else if (ch == '\r')
-			{
-				result.append("\\r");
-			} /*
-				 * else if (ch == '\'') { result.append("\\\'"); }
-				 */else if (ch == '"')
-			{
-				result.append("\\\"");
-			} else
-			{
-				result.append(ch);
-			}
-			ch = iterator.next();
-		}
-		return result.toString();
+
+		return res;
 	}
 
 	public static boolean isNumeric(String str)
