@@ -475,16 +475,11 @@ public class util
 	{
 			{ "\"", "\\\"" },
 			{ "\\", "\\\\" },
-			{ "/", "\\/" } }), new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()));
+			 }), new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()));
 
 	public static String forJSON(String input)
 	{
 		String res = ESCAPE_JSON1.translate(input);
-
-		if (res.indexOf("d:") < 0 && res.indexOf("v-s:") < 0 && res.indexOf("Договор") >= 0)
-		{
-			res.length();
-		}
 
 		return res;
 	}

@@ -8,11 +8,11 @@ import org.json.simple.parser.JSONParser;
 
 public class VedaConnection
 {
-	public VedaConnection(String _url) throws Exception
+	public VedaConnection(String _url, String user, String pass) throws Exception
 	{
 		jp = new JSONParser();
 		destination = _url;
-		vedaTicket = getVedaTicket();
+		vedaTicket = getVedaTicket(user, pass);
 
 		if ((vedaTicket == null) || (vedaTicket.length() < 1))
 		{
@@ -105,10 +105,9 @@ public class VedaConnection
 		return res;
 	}
 
-	public String getVedaTicket() throws Exception
+	public String getVedaTicket(String user, String pass) throws Exception
 	{
-		String res = util
-				.excuteGet(destination + "/authenticate?login=ImportDMSToVeda&password=a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
+		String res = util.excuteGet(destination + "/authenticate?login=" + user + "&password=" + pass);
 
 		System.out.println(res);
 		try
