@@ -290,7 +290,12 @@ public class Individual
 
 		if (type_of_data == _as_struct)
 		{
+			Resources rss = getResources(field_name);
 
+			if (rss != null && rss.resources.size() > 0)
+			{
+				return rss.resources.get(0).getData();
+			}
 		}
 
 		return res;
