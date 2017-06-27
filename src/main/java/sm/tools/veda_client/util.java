@@ -142,7 +142,31 @@ public class util
 			} else if (rc.type == Type._Bool || rc.type == Type._Integer)
 			{
 				// sb.append('"');
-				sb.append((String) rc.data.toLowerCase());
+				if (rc.type == Type._Integer)
+				{
+					String s_tmp = rc.data.toLowerCase();
+					if (s_tmp.charAt(0) == '0')
+					{
+						int ii = 0;
+						
+						while (s_tmp.charAt(ii) == '0')
+							ii++;
+						s_tmp = s_tmp.substring(ii, s_tmp.length());						
+					}
+					
+					try
+					{
+						Integer i_tmp = Integer.parseInt(s_tmp);
+						//System.out.println("@ i_tmp=[" + i_tmp + "], s_tmp=[" + s_tmp + "]");
+						sb.append(i_tmp.toString());
+					}
+					catch (Exception ex)
+					{
+						ex.printStackTrace();
+					}
+				}
+				else
+					sb.append((String) rc.data.toLowerCase());
 				// sb.append('"');
 			} else if (rc.type == Type._Decimal)
 			{
