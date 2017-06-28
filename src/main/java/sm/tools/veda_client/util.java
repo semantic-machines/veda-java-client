@@ -149,7 +149,7 @@ public class util
 					{
 						int ii = 0;
 						
-						while (s_tmp.charAt(ii) == '0')
+						while (ii < s_tmp.length() - 1 && s_tmp.charAt(ii) == '0')
 							ii++;
 						s_tmp = s_tmp.substring(ii, s_tmp.length());						
 					}
