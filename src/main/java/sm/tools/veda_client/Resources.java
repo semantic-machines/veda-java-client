@@ -35,7 +35,7 @@ public class Resources
 
 			for (Resource i_rc : resources)
 			{
-				if (i_rc.data.equals(rc.data) && i_rc.type == rc.type)
+				if (i_rc.data.equals(rc.data) && i_rc.type == rc.type && i_rc.lang == rc.lang)
 					return this;
 			}
 
