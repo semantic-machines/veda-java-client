@@ -17,7 +17,7 @@ import co.nstant.in.cbor.model.UnicodeString;
 
 public class CborBuilder extends AbstractBuilder<CborBuilder> {
 
-    private final List<DataItem> dataItems = new LinkedList<>();
+    private final List<DataItem> dataItems = new LinkedList<DataItem>();
 
     public CborBuilder() {
         super(null);

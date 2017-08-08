@@ -84,7 +84,7 @@ public class CborDecoder {
      *             if decoding failed
      */
     public List<DataItem> decode() throws CborException {
-        List<DataItem> dataItems = new LinkedList<>();
+        List<DataItem> dataItems = new LinkedList<DataItem>();
         DataItem dataItem;
         while ((dataItem = decodeNext()) != null) {
             dataItems.add(dataItem);

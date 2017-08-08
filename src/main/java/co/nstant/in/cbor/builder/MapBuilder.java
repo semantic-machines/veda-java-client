@@ -82,26 +82,26 @@ public class MapBuilder<T extends AbstractBuilder<?>> extends
     public ArrayBuilder<MapBuilder<T>> putArray(DataItem key) {
         Array array = new Array();
         put(key, array);
-        return new ArrayBuilder<>(this, array);
+        return new ArrayBuilder<MapBuilder<T>>(this, array);
     }
 
     public ArrayBuilder<MapBuilder<T>> putArray(long key) {
         Array array = new Array();
         put(convert(key), array);
-        return new ArrayBuilder<>(this, array);
+        return new ArrayBuilder<MapBuilder<T>>(this, array);
     }
 
     public ArrayBuilder<MapBuilder<T>> putArray(String key) {
         Array array = new Array();
         put(convert(key), array);
-        return new ArrayBuilder<>(this, array);
+        return new ArrayBuilder<MapBuilder<T>>(this, array);
     }
 
     public ArrayBuilder<MapBuilder<T>> startArray(DataItem key) {
         Array array = new Array();
         array.setChunked(true);
         put(key, array);
-        return new ArrayBuilder<>(this, array);
+        return new ArrayBuilder<MapBuilder<T>>(this, array);
     }
 
     public ArrayBuilder<MapBuilder<T>> startArray(long key) {
@@ -112,25 +112,25 @@ public class MapBuilder<T extends AbstractBuilder<?>> extends
         Array array = new Array();
         array.setChunked(true);
         put(convert(key), array);
-        return new ArrayBuilder<>(this, array);
+        return new ArrayBuilder<MapBuilder<T>>(this, array);
     }
 
     public MapBuilder<MapBuilder<T>> putMap(DataItem key) {
         Map nestedMap = new Map();
         put(key, nestedMap);
-        return new MapBuilder<>(this, nestedMap);
+        return new MapBuilder<MapBuilder<T>>(this, nestedMap);
     }
 
     public MapBuilder<MapBuilder<T>> putMap(long key) {
         Map nestedMap = new Map();
         put(convert(key), nestedMap);
-        return new MapBuilder<>(this, nestedMap);
+        return new MapBuilder<MapBuilder<T>>(this, nestedMap);
     }
 
     public MapBuilder<MapBuilder<T>> putMap(String key) {
         Map nestedMap = new Map();
         put(convert(key), nestedMap);
-        return new MapBuilder<>(this, nestedMap);
+        return new MapBuilder<MapBuilder<T>>(this, nestedMap);
     }
 
     public T end() {
