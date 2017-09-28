@@ -81,7 +81,7 @@ public class VedaConnection
 		int count_wait = 0;
 		while (res == 429)
 		{
-			String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"prepare_events\":" + isPrepareEvent
+			String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"assigned_subsystems\":0"
 					+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
 			res = util.excutePut(destination + "/put_individual", query);
 
