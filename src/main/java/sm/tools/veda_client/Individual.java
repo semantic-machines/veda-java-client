@@ -280,7 +280,15 @@ public class Individual
 			JSONArray code_obj = (JSONArray) js_src.get(field_name);
 			if (code_obj != null)
 			{
-				String code = (String) ((JSONObject) (code_obj.get(0))).get("data");
+				Object data = ((JSONObject) (code_obj.get(0))).get("data");
+
+				String code = null;
+
+				if (data instanceof String)
+					code = (String) ((JSONObject) (code_obj.get(0))).get("data");
+				else if (data instanceof Long)
+					code = ((Long) ((JSONObject) (code_obj.get(0))).get("data")) + "";
+
 				if (code != null)
 				{
 					return code;
