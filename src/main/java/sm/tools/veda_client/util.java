@@ -128,6 +128,12 @@ public class util
 		int cc = 0;
 		for (Resource rc : rcs.resources)
 		{
+			if ((rc.data == null || ((String) rc.data).equals(""))
+					&& (rc.type == Type._Decimal || rc.type == Type._Integer || rc.type == Type._Datetime))
+			{
+				continue;
+			}
+
 			if (cc > 0)
 				sb.append(',');
 
@@ -148,24 +154,22 @@ public class util
 					if (s_tmp.charAt(0) == '0')
 					{
 						int ii = 0;
-						
+
 						while (ii < s_tmp.length() - 1 && s_tmp.charAt(ii) == '0')
 							ii++;
-						s_tmp = s_tmp.substring(ii, s_tmp.length());						
+						s_tmp = s_tmp.substring(ii, s_tmp.length());
 					}
-					
+
 					try
 					{
 						Integer i_tmp = Integer.parseInt(s_tmp);
 						//System.out.println("@ i_tmp=[" + i_tmp + "], s_tmp=[" + s_tmp + "]");
 						sb.append(i_tmp.toString());
-					}
-					catch (Exception ex)
+					} catch (Exception ex)
 					{
 						ex.printStackTrace();
 					}
-				}
-				else
+				} else
 					sb.append((String) rc.data.toLowerCase());
 				// sb.append('"');
 			} else if (rc.type == Type._Decimal)
@@ -498,8 +502,7 @@ public class util
 	public static final CharSequenceTranslator ESCAPE_JSON1 = new AggregateTranslator(new LookupTranslator(new String[][]
 	{
 			{ "\"", "\\\"" },
-			{ "\\", "\\\\" },
-			 }), new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()));
+			{ "\\", "\\\\" }, }), new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()));
 
 	public static String forJSON(String input)
 	{
