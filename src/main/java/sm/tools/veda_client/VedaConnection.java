@@ -66,6 +66,81 @@ public class VedaConnection
 	boolean _isOk = false;
 	JSONParser jp;
 	public long count_put = 0;
+	
+	public int setIndividual(Individual indv, boolean isPrepareEvent, int assignedSubsystems) throws InterruptedException
+	{
+		String jsn = indv.toJsonStr();
+		String ijsn = "{\"@\":\"" + indv.getUri() + "\"," + jsn + "}";
+		int res = setJson(ijsn, isPrepareEvent, assignedSubsystems);
+		return res;
+	}
+
+	private int setJson(String jsn, boolean isPrepareEvent, int assignedSubsystems) throws InterruptedException
+	{
+		if (jsn.indexOf("\\") >= 0)
+		{
+			int len = jsn.length();
+			StringBuffer new_str_buff = new StringBuffer();
+
+			for (int idx = 0; idx < jsn.length(); idx++)
+			{
+				char ch1 = jsn.charAt(idx);
+				new_str_buff.append(ch1);
+
+				if (ch1 == '\\')
+				{
+					char ch2 = 0;
+
+					if (idx < len - 1)
+						ch2 = jsn.charAt(idx + 1);
+
+					if (ch2 != 'n' && ch2 != 'b' && ch2 != '"' && ch2 != '\\')
+					{
+						new_str_buff.append('\\');
+					}
+
+					if (ch2 == '\\')
+					{
+						new_str_buff.append(ch2);
+						idx++;
+					}
+
+				}
+			}
+
+			jsn = new_str_buff.toString();
+		}
+
+		int res = 429;
+		int count_wait = 0;
+		while (res == 429)
+		{
+			//String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"prepare_events\":" + isPrepareEvent
+				//	+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
+			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
+					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
+			System.out.println(query);
+			res = util.excutePut(destination + "/set_in_individual", query);
+
+			if (res != 200)
+			{
+				if (res == 429)
+				{
+					Thread.sleep(10);
+					count_wait++;
+				}
+			} else
+			{
+				count_put++;
+			}
+
+			if (count_wait == 1)
+				System.out.print(".");
+
+		}
+
+		return res;
+	}
 
 	public int putIndividual(Individual indv, boolean isPrepareEvent, int assignedSubsystems) throws InterruptedException
 	{
