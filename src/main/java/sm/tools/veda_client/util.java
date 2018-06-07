@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -175,7 +177,19 @@ public class util
 			} else if (rc.type == Type._Decimal)
 			{
 				sb.append('"');
-				sb.append((String) rc.data);
+
+				try
+				{
+					Double dd = Double.parseDouble((String) rc.data);
+
+					NumberFormat format = new DecimalFormat("###################.##########");
+					
+					sb.append(format.format(dd));
+				} catch (Exception ex)
+				{
+					sb.append((String) rc.data);
+				}
+
 				sb.append('"');
 			} else if (rc.type == Type._Datetime)
 			{
