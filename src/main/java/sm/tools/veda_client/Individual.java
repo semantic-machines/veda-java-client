@@ -34,7 +34,7 @@ public class Individual
 	public Resources addProperty(String field_name, Date _data)
 	{
 		Resources res;
-
+		
 		if (type_of_data == _as_json)
 			getResources("@");
 
@@ -55,8 +55,8 @@ public class Individual
 
 		if (type_of_data == _as_json)
 			getResources("@");
-
 		res = data.get(field_name);
+		if (value == null || value.equals("")) return res;
 		if (res != null)
 			for (Resource rc : res.resources)
 				if (rc.data.equals(value) && rc.type == type)
@@ -80,6 +80,7 @@ public class Individual
 			getResources("@");
 
 		res = data.get(field_name);
+		if (value == null || value.equals("")) return res;
 		if (res != null)
 			for (Resource rc : res.resources)
 				if (rc.data.equals(value) && rc.type == Type._String)
