@@ -29,6 +29,7 @@ public class Resources
 	{
 		if (_data != null)
 		{
+			_data = _data.trim();
 			_data = _data.replace("\\", "\\\\");
 
 			Resource rc = new Resource(_data, 2, _lang);
@@ -40,6 +41,7 @@ public class Resources
 			}
 
 			resources.add(rc);
+			
 		}
 		return this;
 	}
@@ -47,7 +49,8 @@ public class Resources
 	public Resources add(String _data, int _type)
 	{
 		if (_data != null)
-		{
+		{	
+			_data = _data.trim();
 			if (_type == Type._String)
 				_data = _data.replace("\\", "\\\\");
 
