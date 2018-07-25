@@ -21,6 +21,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -32,6 +33,13 @@ import org.apache.commons.lang3.text.translate.AggregateTranslator;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 public class util
 {
@@ -319,48 +327,41 @@ public class util
 
 	public static String excuteGet(String targetURL) throws Exception
 	{
-		URL url;
-		HttpURLConnection connection = null;
-		try
-		{
-			// Create connection
-			url = new URL(targetURL);
-			connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-
-			connection.setUseCaches(false);
-			connection.setDoOutput(true);
-
-			// Get Response
-			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String line;
-			StringBuffer response = new StringBuffer();
-			while ((line = rd.readLine()) != null)
-			{
-				response.append(line);
-				response.append('\r');
+		StringBuffer responseBuffer = null;
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(targetURL);
+		CloseableHttpResponse response = httpclient.execute(httpGet);
+		
+		try {
+		    HttpEntity responseEnity = response.getEntity();
+		    
+		    int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 200) {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(responseEnity.getContent()));
+				String line = null;			
+				responseBuffer = new StringBuffer();
+				while ((line = reader.readLine()) != null)
+				{
+					responseBuffer.append(line);
+					responseBuffer.append('\r');
+				}
+				reader.close();
+			} else {
+				System.out.println(targetURL);
+				System.out.println(response.getStatusLine());
 			}
-			rd.close();
-			return response.toString();
-
+			EntityUtils.consume(responseEnity);
+			System.out.println(responseBuffer+"\n");
 		} catch (Exception e)
 		{
-
-			// e.printStackTrace();
-			if (connection.getResponseMessage().equals("Unprocessable Entity") == false)
-				e.printStackTrace();
-
+			e.printStackTrace();
 			return null;
 
-		} finally
-		{
-
-			if (connection != null)
-			{
-				connection.disconnect();
-			}
+		} finally {
+			response.close();
 		}
+		if (responseBuffer == null) return null;
+		return responseBuffer.toString();
 	}
 
 	public static String byteArrayToHexString(byte[] b)
@@ -422,6 +423,7 @@ public class util
 				System.out.println("\nSending 'PUT' request to URL : " + url);
 				System.out.println("Post parameters : " + urlParameters);
 				System.out.println("Response Code : " + responseCode);
+				System.out.println();
 			}
 
 			return responseCode;
