@@ -24,6 +24,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -227,15 +228,16 @@ public class VedaConnection
 		HttpClientContext context = HttpClientContext.create();
 		context.setCookieStore(cookieStore);
 		
-		HttpPost uploadFile = new HttpPost(destination+"/files");
+		HttpPost uploadFile = new HttpPost(destination+"/files");	
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+		builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
 		builder.addTextBody("uri", uri, ContentType.TEXT_PLAIN);
 		builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
 		
-		builder.addBinaryBody("file", data, ContentType.MULTIPART_FORM_DATA, fileName);
-
 		HttpEntity multipart = builder.build();
-		uploadFile.setEntity(multipart);
+		uploadFile.setEntity(multipart);		
+		
 		CloseableHttpResponse response = httpClient.execute(uploadFile, context);
 		HttpEntity responseEntity = response.getEntity();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
@@ -243,7 +245,7 @@ public class VedaConnection
 		while((line = reader.readLine()) != null) {
 		    System.out.println("UPLOAD FILE: " + line);
 		}
-		
+		httpClient.close();
 		return uri;
 	}
 	
