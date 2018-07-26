@@ -346,9 +346,9 @@ public class util
 					responseBuffer.append('\r');
 				}
 				reader.close();
-			} else {
-				System.out.println(targetURL);
-				System.out.println(response.getStatusLine());
+			} else if ( (statusCode != 404) && (statusCode != 422)){
+				System.out.println(String.format("Unexpected response code: %s", response.getStatusLine()));
+				System.out.println(String.format("targetURL: %s", targetURL));
 			}
 			EntityUtils.consume(responseEnity);
 			System.out.println(responseBuffer+"\n");
