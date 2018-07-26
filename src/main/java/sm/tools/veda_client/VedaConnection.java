@@ -269,8 +269,7 @@ public class VedaConnection
 	public String[] query(String query) throws Exception
 	{
 		String[] res_arr;
-		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&query=" + URLEncoder.encode(query));
-
+		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&query=" + URLEncoder.encode(query,"UTF-8"));
 		// System.out.println(res);
 		try
 		{
