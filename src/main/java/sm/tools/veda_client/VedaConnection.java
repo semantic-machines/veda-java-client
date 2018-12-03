@@ -120,7 +120,7 @@ public class VedaConnection
 				//	+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
 			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
 					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
-			System.out.println(query);
+			//System.out.println(query);
 			res = util.excutePut(destination + "/set_in_individual", query);
 
 			if (res != 200)
@@ -195,7 +195,7 @@ public class VedaConnection
 				//	+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
 			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
 					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
-			System.out.println(query);
+			//System.out.println(query);
 			res = util.excutePut(destination + "/put_individual", query);
 
 			if (res != 200)
