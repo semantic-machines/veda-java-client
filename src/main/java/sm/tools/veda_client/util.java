@@ -351,7 +351,7 @@ public class util
 				System.out.println(String.format("targetURL: %s", targetURL));
 			}
 			EntityUtils.consume(responseEnity);
-			System.out.println(responseBuffer+"\n");
+			//System.out.println(responseBuffer+"\n");
 		} catch (Exception e)
 		{
 			e.printStackTrace();
