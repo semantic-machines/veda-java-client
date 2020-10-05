@@ -13,8 +13,10 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -190,8 +192,10 @@ public class util
 				{
 					Double dd = Double.parseDouble((String) rc.data);
 
-					NumberFormat format = new DecimalFormat("###################.##########");
-					
+					DecimalFormat format = new DecimalFormat("###################.##########");
+					DecimalFormatSymbols dfs = format.getDecimalFormatSymbols();
+					dfs.setDecimalSeparator('.');
+					format.setDecimalFormatSymbols(dfs);
 					sb.append(format.format(dd));
 				} catch (Exception ex)
 				{
@@ -250,10 +254,15 @@ public class util
 
 	public static String date2string(Date date)
 	{
-		TimeZone gmtTime = TimeZone.getTimeZone("GMT");
-		sdf2.setTimeZone(gmtTime);
-
-		StringBuilder sb = new StringBuilder(sdf2.format(date));
+		StringBuilder sb;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if ( (date.getTime() % 100000) == 0) {
+			sb = new StringBuilder(dateFormat.format(date));
+		} else {
+			TimeZone gmtTime = TimeZone.getTimeZone("GMT");
+			dateFormat.setTimeZone(gmtTime);
+			sb = new StringBuilder(dateFormat.format(date));
+		}
 		sb.setCharAt(10, 'T');
 		sb.append("Z");
 		return sb.toString();
@@ -330,9 +339,9 @@ public class util
 		StringBuffer responseBuffer = null;
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(targetURL);
-		CloseableHttpResponse response = httpclient.execute(httpGet);
-		
+		CloseableHttpResponse response = null;
 		try {
+			response = httpclient.execute(httpGet);
 		    HttpEntity responseEnity = response.getEntity();
 		    
 		    int statusCode = response.getStatusLine().getStatusCode();
@@ -352,13 +361,15 @@ public class util
 			}
 			EntityUtils.consume(responseEnity);
 			//System.out.println(responseBuffer+"\n");
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 
 		} finally {
-			response.close();
+			if (response != null) {
+				response.close();
+			}
+			httpclient.close();
 		}
 		if (responseBuffer == null) return null;
 		return responseBuffer.toString();

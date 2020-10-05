@@ -2,22 +2,11 @@ package sm.tools.veda_client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.CookieStore;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -30,6 +19,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -118,10 +108,12 @@ public class VedaConnection
 		{
 			//String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"prepare_events\":" + isPrepareEvent
 				//	+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
-			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
-					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
-			//System.out.println(query);
-			res = util.excutePut(destination + "/set_in_individual", query);
+//			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
+//					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
+			String query=String.format("{\"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
+					+ "\"assigned_subsystems\":%d }", jsn, isPrepareEvent, assignedSubsystems);
+//			System.out.println(query);
+			res = util.excutePut(destination + "/set_in_individual?ticket=" + vedaTicket, query);
 
 			if (res != 200)
 			{
@@ -151,7 +143,7 @@ public class VedaConnection
 		return res;
 	}
 
-	private int putJson(String jsn, boolean isPrepareEvent, int assignedSubsystems) throws InterruptedException
+	public int putJson(String jsn, boolean isPrepareEvent, int assignedSubsystems) throws InterruptedException
 	{
 		if (jsn.indexOf("\\") >= 0)
 		{
@@ -193,10 +185,12 @@ public class VedaConnection
 		{
 			//String query = "{\"ticket\":\"" + vedaTicket + "\", \"individual\":" + jsn + ", \"prepare_events\":" + isPrepareEvent
 				//	+ ", \"event_id\":\"\", " + "\"transaction_id\":\"\" }";
-			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
-					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
-			//System.out.println(query);
-			res = util.excutePut(destination + "/put_individual", query);
+//			String query=String.format("{\"ticket\":\"%s\", \"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
+//					+ "\"assigned_subsystems\":%d }", vedaTicket, jsn, isPrepareEvent, assignedSubsystems);
+			String query=String.format("{\"individual\":%s, \"prepare_events\": %b, \"event_id\":\"\", \"transaction_id\":\"\","
+					+ "\"assigned_subsystems\":%d }", jsn, isPrepareEvent, assignedSubsystems);
+//			System.out.println(query);
+			res = util.excutePut(destination + "/put_individual?ticket=" + vedaTicket, query);
 
 			if (res != 200)
 			{
@@ -250,9 +244,11 @@ public class VedaConnection
 	}
 	
 	public String getVedaTicket(String user, String pass) throws Exception
-	{
-		String res = util.excuteGet(destination + "/authenticate?login=" + user + "&password=" + pass);
-
+	{	
+		String query = destination + "/authenticate?login=" + user + "&password=" + pass;
+		System.out.println("ticketQuery="+query);
+		String res = util.excuteGet(query);
+		
 		System.out.println(res);
 		try
 		{
@@ -265,7 +261,34 @@ public class VedaConnection
 		}
 		return null;
 	}
+	
+	public String[] query(String query, String param) throws UnsupportedEncodingException, Exception {
+		String[] res_arr;
+		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&"+param+"&query=" + URLEncoder.encode(query,"UTF-8"));
+		// System.out.println(res);
+		try
+		{
+			Object oo_res = jp.parse(res);
 
+			if (oo_res instanceof JSONObject)
+			{
+				Object oo = ((JSONObject) oo_res).get("result");
+
+				if (oo instanceof JSONArray)
+				{
+					JSONArray arr = (JSONArray) oo;
+					res_arr = new String[arr.size()];
+					arr.toArray(res_arr);
+					return res_arr;
+				}
+			}
+			return null;
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
 	public String[] query(String query) throws Exception
 	{
 		String[] res_arr;

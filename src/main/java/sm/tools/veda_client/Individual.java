@@ -48,15 +48,15 @@ public class Individual
 		res.add(_data);
 		return res;
 	}
-
-	public Resources addProperty(String field_name, String value, int type)
+	
+	public Resources addProperty(String field_name, String value, int type, boolean overWriteIfEmpty)
 	{
 		Resources res = null;
 
 		if (type_of_data == _as_json)
 			getResources("@");
 		res = data.get(field_name);
-		if (value == null || value.equals("")) return res;
+		if ( (value == null || value.equals("")) && !overWriteIfEmpty) return res;
 		if (res != null)
 			for (Resource rc : res.resources)
 				if (rc.data.equals(value) && rc.type == type)
@@ -69,6 +69,28 @@ public class Individual
 		}
 
 		res.add(new Resource(value, type));
+		return res;
+	} 
+	
+	public Resources addProperty(String field_name, String value, int type)
+	{
+		Resources res = addProperty(field_name, value, type, false);
+//		if (type_of_data == _as_json)
+//			getResources("@");
+//		res = data.get(field_name);
+//		if (value == null || value.equals("")) return res;
+//		if (res != null)
+//			for (Resource rc : res.resources)
+//				if (rc.data.equals(value) && rc.type == type)
+//					return res;
+//
+//		if (res == null)
+//		{
+//			res = new Resources();
+//			data.put(field_name, res);
+//		}
+//
+//		res.add(new Resource(value, type));
 		return res;
 	}
 
@@ -289,7 +311,8 @@ public class Individual
 					code = (String) ((JSONObject) (code_obj.get(0))).get("data");
 				else if (data instanceof Long)
 					code = ((Long) ((JSONObject) (code_obj.get(0))).get("data")) + "";
-
+				else if (data instanceof Boolean)
+					code = ((Boolean) ((JSONObject) (code_obj.get(0))).get("data")) + "";
 				if (code != null)
 				{
 					return code;
