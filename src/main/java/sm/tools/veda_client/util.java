@@ -45,9 +45,9 @@ import org.apache.http.util.EntityUtils;
 
 public class util
 {
-	private static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
-	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private static SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
+	private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static String escape(String string)
 	{
@@ -90,17 +90,10 @@ public class util
 		}
 	}
 
-	public static String get_hashed_uri(String big_uri)
+	public static String get_hashed_uri(String big_uri) throws NoSuchAlgorithmException
 	{
 		MessageDigest md = null;
-		try
-		{
-			md = MessageDigest.getInstance("SHA-1");
-		} catch (NoSuchAlgorithmException e)
-		{
-			e.printStackTrace();
-		}
-
+		md = MessageDigest.getInstance("SHA-1");
 		String hh = util.byteArrayToHexString(md.digest(big_uri.getBytes()));
 
 		if (hh.charAt(0) >= '0' && hh.charAt(0) <= '9')
@@ -179,7 +172,7 @@ public class util
 						sb.append(i_tmp.toString());
 					} catch (Exception ex)
 					{
-						ex.printStackTrace();
+						//ex.printStackTrace();
 					}
 				} else
 					sb.append((String) rc.data.toLowerCase());
@@ -233,7 +226,7 @@ public class util
 	 * @param time
 	 * @return XMLGregorianCalendar
 	 */
-	public static Date string2date(String date)
+	public Date string2date(String date)
 	{
 		date = date.replace('T', ' ');
 		date = date.substring(0, date.indexOf('+'));
@@ -268,7 +261,7 @@ public class util
 		return sb.toString();
 	}
 
-	public static String date2_short_string(Date date)
+	public String date2_short_string(Date date)
 	{
 		StringBuilder sb = new StringBuilder(sdf3.format(date));
 		return sb.toString();
@@ -321,7 +314,7 @@ public class util
 		} catch (Exception e)
 		{
 
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 
 		} finally
@@ -337,39 +330,35 @@ public class util
 	public static String excuteGet(String targetURL) throws Exception
 	{
 		StringBuffer responseBuffer = null;
-		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(targetURL);
 		CloseableHttpResponse response = null;
-		try {
-			response = httpclient.execute(httpGet);
-		    HttpEntity responseEnity = response.getEntity();
-		    
-		    int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode == 200) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(responseEnity.getContent()));
-				String line = null;			
-				responseBuffer = new StringBuffer();
-				while ((line = reader.readLine()) != null)
-				{
-					responseBuffer.append(line);
-					responseBuffer.append('\r');
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()){
+			try {
+				response = httpclient.execute(httpGet);
+			    HttpEntity responseEnity = response.getEntity();
+			    
+			    int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 200) {
+					BufferedReader reader = new BufferedReader(new InputStreamReader(responseEnity.getContent()));
+					String line = null;			
+					responseBuffer = new StringBuffer();
+					while ((line = reader.readLine()) != null)
+					{
+						responseBuffer.append(line);
+						responseBuffer.append('\r');
+					}
+					reader.close();
+				} else if ( (statusCode != 404) && (statusCode != 422)){
+					System.out.println(String.format("Unexpected response code: %s", response.getStatusLine()));
+					System.out.println(String.format("targetURL: %s", targetURL));
 				}
-				reader.close();
-			} else if ( (statusCode != 404) && (statusCode != 422)){
-				System.out.println(String.format("Unexpected response code: %s", response.getStatusLine()));
-				System.out.println(String.format("targetURL: %s", targetURL));
+				EntityUtils.consume(responseEnity);
+				//System.out.println(responseBuffer+"\n");
+			} finally {
+				if (response != null) {
+					response.close();
+				}
 			}
-			EntityUtils.consume(responseEnity);
-			//System.out.println(responseBuffer+"\n");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-
-		} finally {
-			if (response != null) {
-				response.close();
-			}
-			httpclient.close();
 		}
 		if (responseBuffer == null) return null;
 		return responseBuffer.toString();
@@ -395,7 +384,7 @@ public class util
 		return result;
 	}
 
-	public static int excutePut(String targetURL, String urlParameters)
+	public static int excutePut(String targetURL, String urlParameters) throws InterruptedException
 	{
 		// System.out.println("Post parameters : " + urlParameters);
 
@@ -441,27 +430,19 @@ public class util
 
 		} catch (java.net.NoRouteToHostException e)
 		{
-			try
+			if (connection != null)
 			{
-				if (connection != null)
-				{
-					connection.disconnect();
-					connection = null;
-				}
-
-				// e.printStackTrace();
-				Thread.currentThread().sleep(1000);
-				System.out.println("retry");
-				return excutePut(targetURL, urlParameters);
-			} catch (Exception ex)
-			{
-				System.out.println("Post parameters : " + urlParameters);
-				return -1;
+				connection.disconnect();
+				connection = null;
 			}
+
+			// e.printStackTrace();
+			Thread.currentThread().sleep(1000);
+			System.out.println("retry");
+			return excutePut(targetURL, urlParameters);
 		} catch (Exception e)
 		{
-
-			e.printStackTrace();
+			//e.printStackTrace();
 			return -1;
 
 		} finally

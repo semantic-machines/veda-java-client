@@ -43,8 +43,10 @@ public class VedaConnection
 		{
 			System.out.println("Destination.Veda.Login filed");
 			_isOk = false;
+		} else {
+			_isOk = true;
 		}
-		_isOk = true;
+		
 	}
 
 	public boolean isOk()
@@ -214,32 +216,37 @@ public class VedaConnection
 
 	public String uploadFile(byte[] data, String path, String fileName) throws ClientProtocolException, IOException {
 		String uri = DigestUtils.shaHex(data);
-		
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		BasicCookieStore cookieStore = new BasicCookieStore(); 
-		BasicClientCookie cookie = new BasicClientCookie("ticket", vedaTicket);
-		cookieStore.addCookie(cookie); 
-		HttpClientContext context = HttpClientContext.create();
-		context.setCookieStore(cookieStore);
-		
-		HttpPost uploadFile = new HttpPost(destination+"/files");	
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
-		builder.addTextBody("uri", uri, ContentType.TEXT_PLAIN);
-		builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
-		
-		HttpEntity multipart = builder.build();
-		uploadFile.setEntity(multipart);		
-		
-		CloseableHttpResponse response = httpClient.execute(uploadFile, context);
-		HttpEntity responseEntity = response.getEntity();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-		String line = null;
-		while((line = reader.readLine()) != null) {
-		    System.out.println("UPLOAD FILE: " + line);
-		}
-		httpClient.close();
+		CloseableHttpClient httpClient = null;
+		try {
+			httpClient = HttpClients.createDefault();
+			BasicCookieStore cookieStore = new BasicCookieStore(); 
+			BasicClientCookie cookie = new BasicClientCookie("ticket", vedaTicket);
+			cookieStore.addCookie(cookie); 
+			HttpClientContext context = HttpClientContext.create();
+			context.setCookieStore(cookieStore);
+			
+			HttpPost uploadFile = new HttpPost(destination+"/files");	
+			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+			builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
+			builder.addTextBody("uri", uri, ContentType.TEXT_PLAIN);
+			builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
+			
+			HttpEntity multipart = builder.build();
+			uploadFile.setEntity(multipart);		
+			
+			CloseableHttpResponse response = httpClient.execute(uploadFile, context);
+			HttpEntity responseEntity = response.getEntity();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
+			String line = null;
+			while((line = reader.readLine()) != null) {
+			    System.out.println("UPLOAD FILE: " + line);
+			}
+		} finally {
+			if (httpClient != null) {
+				httpClient.close();
+			}
+		}		
 		return uri;
 	}
 	
@@ -257,7 +264,7 @@ public class VedaConnection
 			return (String) oo.get("id");
 		} catch (Exception ex)
 		{
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return null;
 	}
@@ -285,7 +292,7 @@ public class VedaConnection
 			return null;
 		} catch (Exception ex)
 		{
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return null;
 	}
@@ -313,7 +320,7 @@ public class VedaConnection
 			return null;
 		} catch (Exception ex)
 		{
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return null;
 	}
@@ -333,7 +340,7 @@ public class VedaConnection
 			return new Individual(oo);
 		} catch (Exception ex)
 		{
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return null;
 	}

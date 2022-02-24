@@ -36,7 +36,7 @@ public class HalfPrecisionFloatDecoder extends
                             : (s != 0 ? -1 : 1) * Float.POSITIVE_INFINITY;
         }
 
-        return (float) ((s != 0 ? -1 : 1) * Math.pow(2, e - 15) * (1 + f / Math
+        return (float) ((s != 0 ? -1 : 1) * Math.pow(2, Double.valueOf(e) - 15) * (1 + f / Math
                         .pow(2, 10)));
     }
 
