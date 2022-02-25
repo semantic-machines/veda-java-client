@@ -296,7 +296,7 @@ public class VedaConnection
 		}
 		return null;
 	}
-	public String[] query(String query) throws Exception
+	public String[] query(String query) throws UnsupportedEncodingException, IOException
 	{
 		String[] res_arr;
 		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&query=" + URLEncoder.encode(query,"UTF-8"));
