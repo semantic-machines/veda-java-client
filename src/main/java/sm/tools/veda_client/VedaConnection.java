@@ -325,7 +325,7 @@ public class VedaConnection
 		return null;
 	}
 
-	public Individual getIndividual(String uri) throws Exception
+	public Individual getIndividual(String uri) throws IOException
 	{
 		String res = util.excuteGet(destination + "/get_individual?ticket=" + vedaTicket + "&uri=" + uri);
 

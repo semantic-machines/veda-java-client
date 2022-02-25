@@ -327,7 +327,7 @@ public class util
 		}
 	}
 
-	public static String excuteGet(String targetURL) throws Exception
+	public static String excuteGet(String targetURL) throws IOException
 	{
 		StringBuffer responseBuffer = null;
 		HttpGet httpGet = new HttpGet(targetURL);
