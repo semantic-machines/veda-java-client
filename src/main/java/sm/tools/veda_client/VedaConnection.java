@@ -33,7 +33,7 @@ public class VedaConnection
     public static final int SCRIPTS           = 16;
     public static final int FANOUT_SQL        = 32;
     public static final int USER_MODULES_TOOL = 64;
-	public VedaConnection(String _url, String user, String pass) throws Exception
+	public VedaConnection(String _url, String user, String pass) throws IOException
 	{
 		jp = new JSONParser();
 		destination = _url;
@@ -250,7 +250,7 @@ public class VedaConnection
 		return uri;
 	}
 	
-	public String getVedaTicket(String user, String pass) throws Exception
+	public String getVedaTicket(String user, String pass) throws IOException
 	{	
 		String query = destination + "/authenticate?login=" + user + "&password=" + pass;
 		System.out.println("ticketQuery="+query);
@@ -296,7 +296,7 @@ public class VedaConnection
 		}
 		return null;
 	}
-	public String[] query(String query) throws UnsupportedEncodingException, IOException
+	public String[] query(String query) throws IOException
 	{
 		String[] res_arr;
 		String res = util.excuteGet(destination + "/query?ticket=" + vedaTicket + "&query=" + URLEncoder.encode(query,"UTF-8"));
