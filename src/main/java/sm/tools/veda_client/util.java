@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -35,8 +36,9 @@ import org.apache.commons.lang3.text.translate.AggregateTranslator;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
-
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -288,11 +290,18 @@ public class util
 			connection.setDoOutput(true);
 
 			// Send request
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(urlParameters);
-			wr.flush();
-			wr.close();
-
+			DataOutputStream wr = null;
+			try {
+				wr = new DataOutputStream(connection.getOutputStream());
+				wr.writeBytes(urlParameters);
+				wr.flush();
+			} catch (Throwable e) {
+				System.out.println("IOException in excutePost: " + urlParameters);
+				throw e;
+			} finally {
+				if (wr != null) wr.close();
+			}
+			
 			int responseCode = connection.getResponseCode();
 			System.out.println("\nSending 'POST' request to URL : " + url);
 			System.out.println("Post parameters : " + urlParameters);
@@ -300,26 +309,27 @@ public class util
 
 			// Get Response
 			InputStream is = connection.getInputStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String line;
-			StringBuffer response = new StringBuffer();
-			while ((line = rd.readLine()) != null)
-			{
-				response.append(line);
-				response.append('\r');
+			BufferedReader rd = null;
+			try {
+				rd = new BufferedReader(new InputStreamReader(is));
+				String line;
+				StringBuffer response = new StringBuffer();
+				while ((line = rd.readLine()) != null)
+				{
+					response.append(line);
+					response.append('\r');
+				}
+				return response.toString();
+			} catch (Throwable e) {
+				System.out.println("Exception on reading output: " + urlParameters);
+				throw e;
+			} finally {
+				if (rd != null) rd.close();
 			}
-			rd.close();
-			return response.toString();
 
-		} catch (Exception e)
-		{
-
-			//e.printStackTrace();
+		} catch (Exception e) {
 			return null;
-
-		} finally
-		{
-
+		} finally {
 			if (connection != null)
 			{
 				connection.disconnect();
@@ -332,32 +342,45 @@ public class util
 		StringBuffer responseBuffer = null;
 		HttpGet httpGet = new HttpGet(targetURL);
 		CloseableHttpResponse response = null;
-		try (CloseableHttpClient httpclient = HttpClients.createDefault()){
-			try {
-				response = httpclient.execute(httpGet);
-			    HttpEntity responseEnity = response.getEntity();
-			    
-			    int statusCode = response.getStatusLine().getStatusCode();
-				if (statusCode == 200) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(responseEnity.getContent()));
-					String line = null;			
+		CloseableHttpClient httpclient = null;
+		try {
+			httpclient = HttpClients.createDefault();
+			httpGet.addHeader("accept-encoding", "identity");
+			response = httpclient.execute(httpGet);
+		    HttpEntity responseEnity = response.getEntity();
+		    
+		    int statusCode = response.getStatusLine().getStatusCode();
+			if (statusCode == 200) {
+				BufferedReader reader = null;
+				InputStreamReader isr = null;
+				try {
+					System.out.println(targetURL);
+					isr = new InputStreamReader(responseEnity.getContent(), StandardCharsets.UTF_8);
+					reader = new BufferedReader(isr);	
+					
+					String line = null;
 					responseBuffer = new StringBuffer();
 					while ((line = reader.readLine()) != null)
 					{
 						responseBuffer.append(line);
 						responseBuffer.append('\r');
 					}
-					reader.close();
-				} else if ( (statusCode != 404) && (statusCode != 422)){
-					System.out.println(String.format("Unexpected response code: %s", response.getStatusLine()));
-					System.out.println(String.format("targetURL: %s", targetURL));
+				} finally {
+					if (reader != null) reader.close();
+					if (isr != null) isr.close();
 				}
-				EntityUtils.consume(responseEnity);
-				//System.out.println(responseBuffer+"\n");
-			} finally {
-				if (response != null) {
-					response.close();
-				}
+			} else if ( (statusCode != 404) && (statusCode != 422)){
+				System.out.println(String.format("Unexpected response code: %s", response.getStatusLine()));
+				System.out.println(String.format("targetURL: %s", targetURL));
+			}
+			EntityUtils.consume(responseEnity);
+			//System.out.println(responseBuffer+"\n");
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+			if (httpclient != null) {
+				httpclient.close();
 			}
 		}
 		if (responseBuffer == null) return null;

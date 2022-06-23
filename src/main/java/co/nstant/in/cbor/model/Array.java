@@ -10,12 +10,12 @@ public class Array extends ChunkableDataItem {
 
     public Array() {
         super(MajorType.ARRAY);
-        objects = new ArrayList<DataItem>();
+        objects = new ArrayList<>();
     }
 
     public Array(int initialCapacity) {
         super(MajorType.ARRAY);
-        objects = new ArrayList<DataItem>(initialCapacity);
+        objects = new ArrayList<>(initialCapacity);
     }
 
     public Array add(DataItem object) {

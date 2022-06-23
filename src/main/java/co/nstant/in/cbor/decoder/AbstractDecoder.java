@@ -15,7 +15,7 @@ public abstract class AbstractDecoder<T> {
     protected final InputStream inputStream;
     protected final CborDecoder decoder;
 
-    public AbstractDecoder(CborDecoder decoder, InputStream inputStream) {
+    protected AbstractDecoder(CborDecoder decoder, InputStream inputStream) {
         this.decoder = decoder;
         this.inputStream = inputStream;
     }

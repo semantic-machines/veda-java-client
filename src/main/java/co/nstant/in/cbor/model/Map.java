@@ -8,16 +8,20 @@ import java.util.List;
 public class Map extends ChunkableDataItem {
 
     private final HashMap<DataItem, DataItem> map;
-    private final List<DataItem> keys = new LinkedList<DataItem>();
+    private final List<DataItem> keys = new LinkedList<>();
 
     public Map() {
         super(MajorType.MAP);
-        map = new HashMap<DataItem, DataItem>();
+        map = new HashMap<>();
     }
 
     public Map(int initialCapacity) {
         super(MajorType.MAP);
-        map = new HashMap<DataItem, DataItem>(initialCapacity);
+        if (initialCapacity > 10000) {
+        	map = new HashMap<>(1000);
+        } else {
+        	map = new HashMap<>(initialCapacity);
+        }
     }
 
     public Map put(DataItem key, DataItem value) {

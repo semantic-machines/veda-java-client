@@ -17,7 +17,7 @@ import co.nstant.in.cbor.model.UnicodeString;
 
 public class CborBuilder extends AbstractBuilder<CborBuilder> {
 
-    private final List<DataItem> dataItems = new LinkedList<DataItem>();
+    private final List<DataItem> dataItems = new LinkedList<>();
 
     public CborBuilder() {
         super(null);
@@ -73,7 +73,7 @@ public class CborBuilder extends AbstractBuilder<CborBuilder> {
 
     public ByteStringBuilder<CborBuilder> startByteString(byte[] bytes) {
         add(new ByteString(bytes).setChunked(true));
-        return new ByteStringBuilder<CborBuilder>(this);
+        return new ByteStringBuilder<>(this);
     }
 
     public CborBuilder add(String string) {
@@ -87,7 +87,7 @@ public class CborBuilder extends AbstractBuilder<CborBuilder> {
 
     public UnicodeStringBuilder<CborBuilder> startString(String string) {
         add(new UnicodeString(string).setChunked(true));
-        return new UnicodeStringBuilder<CborBuilder>(this);
+        return new UnicodeStringBuilder<>(this);
     }
 
     public CborBuilder addTag(long value) {
@@ -99,26 +99,26 @@ public class CborBuilder extends AbstractBuilder<CborBuilder> {
         Array array = new Array();
         array.setChunked(true);
         add(array);
-        return new ArrayBuilder<CborBuilder>(this, array);
+        return new ArrayBuilder<>(this, array);
     }
 
     public ArrayBuilder<CborBuilder> addArray() {
         Array array = new Array();
         add(array);
-        return new ArrayBuilder<CborBuilder>(this, array);
+        return new ArrayBuilder<>(this, array);
     }
 
     public MapBuilder<CborBuilder> addMap() {
         Map map = new Map();
         add(map);
-        return new MapBuilder<CborBuilder>(this, map);
+        return new MapBuilder<>(this, map);
     }
 
     public MapBuilder<CborBuilder> startMap() {
         Map map = new Map();
         map.setChunked(true);
         add(map);
-        return new MapBuilder<CborBuilder>(this, map);
+        return new MapBuilder<>(this, map);
     }
 
     @Override

@@ -16,7 +16,7 @@ import java.util.StringTokenizer;
  */
 public class ItemList {
 	private String sp=",";
-	List<String> items=new ArrayList<String>();
+	List<String> items=new ArrayList<>();
 	
 	
 	public ItemList(){}

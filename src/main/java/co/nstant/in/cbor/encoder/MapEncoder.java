@@ -56,7 +56,7 @@ public class MapEncoder extends AbstractEncoder<Map> {
 		 * (byte-wise) lexical order sorts earlier.
 		 */
 
-		TreeMap<byte[], byte[]> sortedMap = new TreeMap<byte[], byte[]>(new Comparator<byte[]>() {
+		TreeMap<byte[], byte[]> sortedMap = new TreeMap<>(new Comparator<byte[]>() {
 
 			@Override
 			public int compare(byte[] o1, byte[] o2) {

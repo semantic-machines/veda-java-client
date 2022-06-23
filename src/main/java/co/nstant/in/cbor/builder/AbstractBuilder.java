@@ -24,7 +24,7 @@ public abstract class AbstractBuilder<T> {
 
     private final T parent;
 
-    public AbstractBuilder(T parent) {
+    protected AbstractBuilder(T parent) {
         this.parent = parent;
     }
 

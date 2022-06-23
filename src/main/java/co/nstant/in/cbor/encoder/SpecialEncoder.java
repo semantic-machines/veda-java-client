@@ -16,7 +16,7 @@ public class SpecialEncoder extends AbstractEncoder<Special> {
     private final HalfPrecisionFloatEncoder halfPrecisionFloatEncoder;
     private final SinglePrecisionFloatEncoder singlePrecisionFloatEncoder;
     private final DoublePrecisionFloatEncoder doublePrecisionFloatEncoder;
-
+    
     public SpecialEncoder(CborEncoder encoder, OutputStream outputStream) {
         super(encoder, outputStream);
         halfPrecisionFloatEncoder = new HalfPrecisionFloatEncoder(encoder, outputStream);
@@ -26,6 +26,7 @@ public class SpecialEncoder extends AbstractEncoder<Special> {
 
     @Override
     public void encode(Special dataItem) throws CborException {
+    	String wrongDataMessage = "Wrong data item type";
         switch (dataItem.getSpecialType()) {
         case BREAK:
             write((7 << 5) | 31);
@@ -51,25 +52,25 @@ public class SpecialEncoder extends AbstractEncoder<Special> {
             throw new CborException("Unallocated special type");
         case IEEE_754_HALF_PRECISION_FLOAT:
             if (!(dataItem instanceof HalfPrecisionFloat)) {
-                throw new CborException("Wrong data item type");
+                throw new CborException(wrongDataMessage);
             }
             halfPrecisionFloatEncoder.encode((HalfPrecisionFloat) dataItem);
             break;
         case IEEE_754_SINGLE_PRECISION_FLOAT:
             if (!(dataItem instanceof SinglePrecisionFloat)) {
-                throw new CborException("Wrong data item type");
+                throw new CborException(wrongDataMessage);
             }
             singlePrecisionFloatEncoder.encode((SinglePrecisionFloat) dataItem);
             break;
         case IEEE_754_DOUBLE_PRECISION_FLOAT:
             if (!(dataItem instanceof DoublePrecisionFloat)) {
-                throw new CborException("Wrong data item type");
+                throw new CborException(wrongDataMessage);
             }
             doublePrecisionFloatEncoder.encode((DoublePrecisionFloat) dataItem);
             break;
         case SIMPLE_VALUE_NEXT_BYTE:
             if (!(dataItem instanceof SimpleValue)) {
-                throw new CborException("Wrong data item type");
+                throw new CborException(wrongDataMessage);
             }
             SimpleValue simpleValueNextByte = (SimpleValue) dataItem;
             write((7 << 5) | 24);

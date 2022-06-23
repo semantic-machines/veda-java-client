@@ -16,7 +16,7 @@ public abstract class AbstractEncoder<T> {
 	private final OutputStream outputStream;
 	protected final CborEncoder encoder;
 
-	public AbstractEncoder(CborEncoder encoder, OutputStream outputStream) {
+	protected AbstractEncoder(CborEncoder encoder, OutputStream outputStream) {
 		this.encoder = encoder;
 		this.outputStream = outputStream;
 	}

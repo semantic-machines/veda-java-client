@@ -53,27 +53,27 @@ public class ArrayBuilder<T extends AbstractBuilder<?>> extends
     public ArrayBuilder<ArrayBuilder<T>> addArray() {
         Array nestedArray = new Array();
         add(nestedArray);
-        return new ArrayBuilder<ArrayBuilder<T>>(this, nestedArray);
+        return new ArrayBuilder<>(this, nestedArray);
     }
 
     public ArrayBuilder<ArrayBuilder<T>> startArray() {
         Array nestedArray = new Array();
         nestedArray.setChunked(true);
         add(nestedArray);
-        return new ArrayBuilder<ArrayBuilder<T>>(this, nestedArray);
+        return new ArrayBuilder<>(this, nestedArray);
     }
 
     public MapBuilder<ArrayBuilder<T>> addMap() {
         Map nestedMap = new Map();
         add(nestedMap);
-        return new MapBuilder<ArrayBuilder<T>>(this, nestedMap);
+        return new MapBuilder<>(this, nestedMap);
     }
 
     public MapBuilder<ArrayBuilder<T>> startMap() {
         Map nestedMap = new Map();
         nestedMap.setChunked(true);
         add(nestedMap);
-        return new MapBuilder<ArrayBuilder<T>>(this, nestedMap);
+        return new MapBuilder<>(this, nestedMap);
     }
 
     public T end() {
