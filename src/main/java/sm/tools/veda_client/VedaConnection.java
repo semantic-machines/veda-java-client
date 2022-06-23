@@ -225,7 +225,8 @@ public class VedaConnection
 			HttpClientContext context = HttpClientContext.create();
 			context.setCookieStore(cookieStore);
 			
-			HttpPost uploadFile = new HttpPost(destination+"/files");	
+			HttpPost uploadFile = new HttpPost(destination+"/files");
+			uploadFile.addHeader("accept-encoding", "identity");
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
@@ -233,14 +234,22 @@ public class VedaConnection
 			builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
 			
 			HttpEntity multipart = builder.build();
-			uploadFile.setEntity(multipart);		
-			
+			uploadFile.setEntity(multipart);
+			System.out.println("uploadFile: "+uploadFile.getURI());
 			CloseableHttpResponse response = httpClient.execute(uploadFile, context);
+			System.out.println("response: "+response.toString());
 			HttpEntity responseEntity = response.getEntity();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-			String line = null;
-			while((line = reader.readLine()) != null) {
-			    System.out.println("UPLOAD FILE: " + line);
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
+				String line = null;
+				while((line = reader.readLine()) != null) {
+				    System.out.println("UPLOAD FILE: " + line);
+				}
+			} finally {
+				if (reader != null) {
+					reader.close();
+				}
 			}
 		} finally {
 			if (httpClient != null) {
