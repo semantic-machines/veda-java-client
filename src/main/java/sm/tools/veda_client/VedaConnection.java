@@ -1,6 +1,8 @@
 package sm.tools.veda_client;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -213,49 +215,70 @@ public class VedaConnection
 
 		return res;
 	}
-
 	public String uploadFile(byte[] data, String path, String fileName) throws ClientProtocolException, IOException {
+		return uploadFile(data, path, fileName, false);
+	}
+	public String uploadFile(byte[] data, String path, String fileName, boolean isUseFileSystemUpload) throws ClientProtocolException, IOException {
 		String uri = DigestUtils.shaHex(data);
-		CloseableHttpClient httpClient = null;
-		try {
-			httpClient = HttpClients.createDefault();
-			BasicCookieStore cookieStore = new BasicCookieStore(); 
-			BasicClientCookie cookie = new BasicClientCookie("ticket", vedaTicket);
-			cookieStore.addCookie(cookie); 
-			HttpClientContext context = HttpClientContext.create();
-			context.setCookieStore(cookieStore);
-			
-			HttpPost uploadFile = new HttpPost(destination+"/files");
-			uploadFile.addHeader("accept-encoding", "identity");
-			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-			builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
-			builder.addTextBody("uri", uri, ContentType.TEXT_PLAIN);
-			builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
-			
-			HttpEntity multipart = builder.build();
-			uploadFile.setEntity(multipart);
-			System.out.println("uploadFile: "+uploadFile.getURI());
-			CloseableHttpResponse response = httpClient.execute(uploadFile, context);
-			System.out.println("response: "+response.toString());
-			HttpEntity responseEntity = response.getEntity();
-			BufferedReader reader = null;
+		if (isUseFileSystemUpload) {
+			String dest = "/opt/veda/data/files";
+			String filePath = path+"/"+uri;
+			File dir = new File(dest+path);
+			if(!dir.exists()) {
+				boolean created = dir.mkdirs();
+				System.out.println("result on creating "+dest+path+": "+created);
+			}
+			FileOutputStream fos=new FileOutputStream(dest+filePath);
+			fos.write(data);
+			fos.close();
+			System.out.println("uploaded "+path+"/"+uri);
+		} else {
+			CloseableHttpClient httpClient = null;
 			try {
-				reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
-				String line = null;
-				while((line = reader.readLine()) != null) {
-				    System.out.println("UPLOAD FILE: " + line);
+				httpClient = HttpClients.createDefault();
+				BasicCookieStore cookieStore = new BasicCookieStore(); 
+				BasicClientCookie cookie = new BasicClientCookie("ticket", vedaTicket);
+				cookieStore.addCookie(cookie); 
+				HttpClientContext context = HttpClientContext.create();
+				context.setCookieStore(cookieStore);
+				
+				HttpPost uploadFile = new HttpPost(destination+"/files");
+				for (int i = 0; i < context.getCookieStore().getCookies().size(); i++) {
+					System.out.print(context.getCookieStore().getCookies().get(i).getName());
+					System.out.print(": ");
+					System.out.println(context.getCookieStore().getCookies().get(i).getValue());
+				}
+				uploadFile.addHeader("accept-encoding", "identity");
+				MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				builder.addBinaryBody("file", data, ContentType.DEFAULT_BINARY, fileName);
+				builder.addTextBody("uri", uri, ContentType.TEXT_PLAIN);
+				builder.addTextBody("path", path, ContentType.TEXT_PLAIN);
+				
+				HttpEntity multipart = builder.build();
+				uploadFile.setEntity(multipart);
+				System.out.println("uploadFile: "+uploadFile.getURI());
+				CloseableHttpResponse response = httpClient.execute(uploadFile, context);
+				System.out.println("response: "+response.toString());
+				HttpEntity responseEntity = response.getEntity();
+				BufferedReader reader = null;
+				try {
+					reader = new BufferedReader(new InputStreamReader(responseEntity.getContent()));
+					String line = null;
+					while((line = reader.readLine()) != null) {
+					    System.out.println("UPLOAD FILE: " + line);
+					}
+				} finally {
+					if (reader != null) {
+						reader.close();
+					}
 				}
 			} finally {
-				if (reader != null) {
-					reader.close();
+				if (httpClient != null) {
+					httpClient.close();
 				}
 			}
-		} finally {
-			if (httpClient != null) {
-				httpClient.close();
-			}
-		}		
+		}
 		return uri;
 	}
 	

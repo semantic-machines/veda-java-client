@@ -105,7 +105,7 @@ public class Individual
 		if (value == null || value.equals("")) return res;
 		if (res != null)
 			for (Resource rc : res.resources)
-				if (rc.data.equals(value) && rc.type == Type._String)
+				if (rc.data.equals(value) && rc.type == Type._String && rc.lang.equals(lang))
 					return res;
 
 		if (res == null)
